@@ -47,7 +47,8 @@ export default function Home() {
     try {
       const response = await fetch("api/viewattendance");
       const data = await response.json();
-      setAttendance(data);
+      const studentAttendance: any = Object.values(data);
+      setAttendance(studentAttendance);
     } catch (error) {
       console.error("Error loading attendance:", error);
       setAttendance([]);
