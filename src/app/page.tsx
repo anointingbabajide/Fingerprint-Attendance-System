@@ -123,7 +123,7 @@ export default function Home() {
         alert("Student enrolled successfully!");
         loadStudents();
         setFormData({
-          fpid: formData.fpid + 1,
+          fpid: "",
           matricNo: "",
           fullName: "",
           email: "",
