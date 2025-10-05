@@ -45,7 +45,7 @@ export default function Home() {
 
   const loadAttendance = async () => {
     try {
-      const response = await fetch("api//viewattendance");
+      const response = await fetch("api/viewattendance");
       const data = await response.json();
       setAttendance(data);
     } catch (error) {
