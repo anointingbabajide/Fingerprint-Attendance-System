@@ -12,7 +12,7 @@ export default function Home() {
   });
 
   const [formData, setFormData] = useState({
-    fpid: 1,
+    fpid: "",
     matricNo: "",
     fullName: "",
     email: "",
@@ -402,8 +402,7 @@ function Modal({
                 type="number"
                 name="fpid"
                 value={formData.fpid}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
-                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
               />
             </div>
             <div>
