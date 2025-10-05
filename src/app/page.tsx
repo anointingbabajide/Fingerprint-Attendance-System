@@ -323,7 +323,7 @@ export default function Home() {
             ) : (
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
                 {attendance
-                  .slice()
+                  ?.slice()
                   .reverse()
                   .slice(0, 20)
                   .map((record: any, index) => (
