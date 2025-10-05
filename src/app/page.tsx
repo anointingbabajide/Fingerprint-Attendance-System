@@ -402,6 +402,7 @@ function Modal({
                 type="number"
                 name="fpid"
                 value={formData.fpid}
+                onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
               />
             </div>
