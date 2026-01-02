@@ -58,10 +58,18 @@ export async function GET() {
     console.log("Final data is array?", Array.isArray(parsedData));
     console.log("Final data length:", parsedData?.length);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       data: parsedData,
       roomtemp: roomTemp.data,
+      timestamp: Date.now(),
     });
+    response.headers.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+    return response;
   } catch (error) {
     console.error("Error fetching temp records:", error);
 

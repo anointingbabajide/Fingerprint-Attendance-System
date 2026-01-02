@@ -18,7 +18,14 @@ export async function GET() {
     const attendanceArray = Object.values(data);
     console.log("Converted to array:", attendanceArray);
 
-    return NextResponse.json(attendanceArray);
+    const response = NextResponse.json(attendanceArray);
+    response.headers.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+    return response;
   } catch (error) {
     console.error("Error fetching attendance:", error);
 
