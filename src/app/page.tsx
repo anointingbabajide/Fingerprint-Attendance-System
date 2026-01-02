@@ -1,4 +1,5 @@
 "use client";
+import TemperatureMonitor from "@/components/temperature";
 import React, { useState, useEffect } from "react";
 
 export default function Home() {
@@ -67,7 +68,7 @@ export default function Home() {
     const todayRecords = attendance.filter((r: any) => r.date === today);
     const signedIn = new Set(
       todayRecords
-        .filter((r: any) => r.sign_type === "Sign In")
+        .filter((r: any) => r.punch_type === "Sign In")
         .map((r: any) => r.fpid)
     );
 
@@ -75,7 +76,7 @@ export default function Home() {
       totalStudents: students.length,
       presentToday: signedIn.size,
       absentToday: Math.max(0, students.length - signedIn.size),
-      pendingSync: attendance.filter((r: any) => !r.uploaded).length,
+      pendingSync: attendance.filter((r: any) => r.uploaded === false).length,
     });
   };
 
@@ -105,7 +106,7 @@ export default function Home() {
     alert("Enrolling student... Please scan your fingerprint.");
     const formBody = new URLSearchParams();
     formBody.append("mfpid", String(formData.fpid));
-    formBody.append("mstudent_id", formData.matricNo);
+    formBody.append("memployee_id", formData.matricNo);
     formBody.append("mname", formData.fullName);
     formBody.append("memail_id", formData.email);
     formBody.append("mpos", formData.position);
@@ -169,6 +170,44 @@ export default function Home() {
     }
   };
 
+  const handleDownload = async (
+    type: "attendance" | "students" | "temperature"
+  ) => {
+    try {
+      const response = await fetch(`/api/download?${type}=${type}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${type}.json`;
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      alert(
+        `${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } file downloaded successfully!`
+      );
+    } catch (error) {
+      console.error(`Error downloading ${type}:`, error);
+      alert(`Failed to download ${type} file`);
+    }
+  };
+
   const statsCards = [
     {
       id: "total",
@@ -204,18 +243,28 @@ export default function Home() {
           Fingerprint Attendance System
         </h1>
         <div className="flex flex-row items-center gap-3">
+          {/* Download Buttons */}
           <button
-            onClick={() => {
-              loadStudents();
-              loadAttendance();
-            }}
-            className="bg-white text-gray-700 border border-gray-300 px-4 h-10 rounded-lg hover:bg-gray-50"
+            onClick={() => handleDownload("students")}
+            className="bg-green-600 text-white px-4 h-10 rounded-lg hover:bg-green-700 text-sm"
           >
-            Refresh
+            📥 Students
+          </button>
+          <button
+            onClick={() => handleDownload("attendance")}
+            className="bg-purple-600 text-white px-4 h-10 rounded-lg hover:bg-purple-700 text-sm"
+          >
+            📥 Attendance
+          </button>
+          <button
+            onClick={() => handleDownload("temperature")}
+            className="bg-orange-600 text-white px-4 h-10 rounded-lg hover:bg-orange-700 text-sm"
+          >
+            📥 Temperature
           </button>
           <button
             onClick={handleModal}
-            className="bg-[#2563eb] text-white w-48 h-10 rounded-lg hover:bg-[#1d4ed8]"
+            className="bg-[#2563eb] text-white px-6 h-10 rounded-lg hover:bg-[#1d4ed8]"
           >
             Add Student
           </button>
@@ -341,16 +390,14 @@ export default function Home() {
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded ${
-                            record.sign_type === "Sign In"
+                            record.punch_type === "Sign In"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {record.sign_type}
+                          {record.punch_type}
                         </span>
-                        <span className="text-xs text-gray-400">
-                          {record.uploaded ? "✓ Synced" : "⏳ Pending"}
-                        </span>
+                        <span className="text-xs text-gray-400">✓ Synced</span>
                       </div>
                     </div>
                   ))}
@@ -359,6 +406,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <TemperatureMonitor />
 
       {isModalOpen && (
         <Modal

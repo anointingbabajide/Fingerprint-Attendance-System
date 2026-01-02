@@ -4,7 +4,7 @@ import axios from "axios";
 export async function GET() {
   try {
     const { data } = await axios.get(
-      "https://clodhopping-telaesthetic-carlie.ngrok-free.dev/viewattendance",
+      "https://clodhopping-telaesthetic-carlie.ngrok-free.dev/attendance",
       {
         headers: {
           "ngrok-skip-browser-warning": "69420",
